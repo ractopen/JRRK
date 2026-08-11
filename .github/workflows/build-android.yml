@@ -2,12 +2,9 @@ name: Build Flutter Android
 
 on:
   push:
-    branches:
-      - main
-      - dev
     tags:
-      - 'v*'
-  workflow_dispatch: # Allows manual trigger on any branch from the GitHub UI
+      - 'v*'      # Trigger automatically on milestone tags (e.g., v1.0.0)
+  workflow_dispatch: # Allows manual trigger from any branch via GitHub UI
 
 jobs:
   build:
@@ -41,7 +38,7 @@ jobs:
             VERSION_NAME="${GITHUB_REF#refs/tags/v}"
             ARTIFACT_NAME="app-v${VERSION_NAME}"
           else
-            # For regular dev/main pushes or manual dispatch builds
+            # For manual dispatch builds on branches
             VERSION_NAME="1.0.0-dev.${{ github.run_number }}"
             ARTIFACT_NAME="app-dev-${{ github.run_number }}"
           fi
