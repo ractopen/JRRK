@@ -1,0 +1,62 @@
+name: Build Flutter Android
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    tags:
+      - 'v*'
+  workflow_dispatch: # Allows manual trigger on any branch from the GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Extract version name and artifact name prefix
+      - name: Set Version and Artifact Name
+        id: versioning
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            # Strip the 'v' prefix from the tag name (e.g., v1.0.0 -> 1.0.0)
+            VERSION_NAME="${GITHUB_REF#refs/tags/v}"
+            ARTIFACT_NAME="app-v${VERSION_NAME}"
+          else
+            # For regular dev/main pushes or manual dispatch builds
+            VERSION_NAME="1.0.0-dev.${{ github.run_number }}"
+            ARTIFACT_NAME="app-dev-${{ github.run_number }}"
+          fi
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Build Android APK
+        run: |
+          flutter build apk --release \
+            --build-name=${{ steps.versioning.outputs.version_name }} \
+            --build-number=${{ github.run_number }}
+
+      # Upload the output APK with the clean naming convention
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.versioning.outputs.artifact_name }}
+          path: build/app/outputs/flutter-apk/app-release.apk
