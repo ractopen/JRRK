@@ -6,7 +6,8 @@ void customSnackbar(
   BuildContext context,
   String message,
   int durationMS,
-  bool clear,
+  bool
+  clear, //if true clear the snackbar present before showing so the snackbar being run will display immidiatly
   SnackBarType type,
 ) {
   if (clear == true) {
