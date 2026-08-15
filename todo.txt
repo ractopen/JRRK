@@ -1,6 +1,6 @@
 
 // snackbar
-connectivity-checker
+// connectivity-checker
 
 splashscreen
 login

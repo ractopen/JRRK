@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/feature/splashscreen/views/splashscreen.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/core/widgets/snackbar/internetsnackbar.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -22,8 +23,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       scaffoldMessengerKey: scaffoldMessengerKey,
-      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
+      // Add the builder here to wrap the app with the ConnectionListener:
+      builder: (context, child) {
+        return ConnectionListener(child: child ?? const SizedBox.shrink());
+      },
+      home: const SplashScreen(),
     );
   }
 }
