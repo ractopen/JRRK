@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/feature/splashscreen/views/splashscreen.dart';
 import 'package:flutter/services.dart';
 
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -18,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey,
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
