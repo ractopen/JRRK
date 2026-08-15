@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/widgets/snackbar/snackbar.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,7 +13,24 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("mama")),
-      body: const Center(child: Text("Hello World")),
+      body: Center(
+        child: Row(
+          children: [
+            FilledButton(
+              onPressed: () {
+                customSnackbar(
+                  context,
+                  "You click the button betch",
+                  1200,
+                  false,
+                  SnackBarType.success,
+                );
+              },
+              child: Text("Press me betch"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
