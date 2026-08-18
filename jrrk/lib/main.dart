@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
@@ -13,29 +13,31 @@ class EcoScanApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EcoScan+',
+      theme: EcoScanTheme.theme,
       initialRoute: AppRoutes.login,
       routes: {
         AppRoutes.login: (_) => const LoginScreen(),
+        AppRoutes.register: (_) => const RegisterScreen(),
         AppRoutes.otp: (_) => const OtpScreen(),
         AppRoutes.passwordSetup: (_) => const PasswordSetupScreen(),
-        AppRoutes.dashboard: (_) => const MainNavigationShell(),
-        AppRoutes.activity: (_) => const ActivityPage(),
+        AppRoutes.userPortal: (_) => const UserPortalScreen(),
+        AppRoutes.adminPortal: (_) => const AdminPortalScreen(),
         AppRoutes.chat: (_) => const ChatScreen(),
-        AppRoutes.history: (_) => const HistoryPage(),
-        AppRoutes.analytics: (_) => const AnalyticsPage(),
-        AppRoutes.settings: (_) => const SettingsPage(),
+        AppRoutes.history: (_) => const HistoryScreen(),
+        AppRoutes.analytics: (_) => const AnalyticsScreen(),
+        AppRoutes.settings: (_) => const SettingsScreen(),
       },
-      theme: EcoScanTheme.theme,
     );
   }
 }
 
 class AppRoutes {
   static const String login = '/login';
+  static const String register = '/register';
   static const String otp = '/otp';
   static const String passwordSetup = '/password-setup';
-  static const String dashboard = '/dashboard';
-  static const String activity = '/activity';
+  static const String userPortal = '/user-portal';
+  static const String adminPortal = '/admin-portal';
   static const String chat = '/chat';
   static const String history = '/history';
   static const String analytics = '/analytics';
@@ -44,57 +46,81 @@ class AppRoutes {
 
 class EcoScanTheme {
   static const Color peach = Color(0xFFF9CBB0);
-  static const Color creamMist = Color(0xFFFCEEE4);
-  static const Color tealMist = Color(0xFFA2C6CE);
-  static const Color forestTeal = Color(0xFF38616B);
+  static const Color cream = Color(0xFFFCEEE4);
+  static const Color mistTeal = Color(0xFFA2C6CE);
+  static const Color forestPine = Color(0xFF38616B);
+  static const Color slateWhite = Color(0xFFF9FAFB);
   static const Color charcoal = Color(0xFF111111);
   static const Color slate = Color(0xFF5F6771);
-  static const Color borderLight = Color(0xFFE5E7EB);
-  static const Color appBg = Color(0xFFF8F9FA);
+  static const Color border = Color(0xFFE5E7EB);
 
   static ThemeData get theme {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: appBg,
-      fontFamily: 'sans-serif',
+      scaffoldBackgroundColor: slateWhite,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: forestTeal,
-        primary: forestTeal,
-        secondary: tealMist,
+        seedColor: forestPine,
+        primary: forestPine,
+        secondary: mistTeal,
         surface: Colors.white,
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: appBg,
-        elevation: 0,
-        foregroundColor: charcoal,
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(
+          fontSize: 34,
+          fontWeight: FontWeight.w900,
+          color: charcoal,
+          letterSpacing: -0.7,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w800,
+          color: charcoal,
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: borderLight),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: borderLight),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: forestTeal, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: forestPine, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Colors.redAccent, width: 1.1),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 18,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         hintStyle: const TextStyle(color: Color(0xFF8A8F96), fontSize: 15),
       ),
     );
   }
+}
+
+void showPlaceholderDialog(BuildContext context, String feature) {
+  showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Feature Placeholder'),
+      content: Text('$feature is ready for future product integration and design handoff.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
+}
+
+void logoutAndReturnToLogin(BuildContext context) {
+  Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
 }
 
 class AuthScaffold extends StatelessWidget {
@@ -113,17 +139,17 @@ class AuthScaffold extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               EcoScanTheme.peach,
-              EcoScanTheme.creamMist,
-              EcoScanTheme.tealMist,
-              EcoScanTheme.forestTeal,
+              EcoScanTheme.cream,
+              EcoScanTheme.mistTeal,
+              EcoScanTheme.forestPine,
             ],
-            stops: [0.08, 0.38, 0.72, 1.0],
+            stops: [0.0, 0.35, 0.7, 1.0],
           ),
         ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: child,
@@ -146,20 +172,228 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final ValueNotifier<String> _role = ValueNotifier<String>('User');
+  bool _obscurePassword = true;
+
+  String? _validateEmail(String? value) {
+    final email = value?.trim() ?? '';
+    if (email.isEmpty) return 'Please enter an email address.';
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
+      return 'Please enter a valid email address.';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    final password = value ?? '';
+    if (password.isEmpty) return 'Please enter your password.';
+    if (password.length < 6) return 'Password must be at least 6 characters.';
+    return null;
+  }
+
+  void _signIn() {
+    if (_formKey.currentState!.validate()) {
+      final route = _role.value == 'Admin' ? AppRoutes.adminPortal : AppRoutes.userPortal;
+      Navigator.pushReplacementNamed(context, route);
+    }
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
+    _role.dispose();
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return AuthScaffold(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Center(
+            child: Text(
+              'EcoScan+',
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.w900,
+                color: EcoScanTheme.charcoal,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'Welcome Back',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Sign in to your account',
+            style: TextStyle(color: EcoScanTheme.slate, fontSize: 14),
+          ),
+          const SizedBox(height: 16),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: _validateEmail,
+                  decoration: const InputDecoration(hintText: 'Email address'),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  validator: _validatePassword,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: EcoScanTheme.slate,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: EcoScanTheme.border),
+            ),
+            child: ValueListenableBuilder<String>(
+              valueListenable: _role,
+              builder: (context, selectedRole, _) {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: _RoleOption(
+                        label: 'User',
+                        selected: selectedRole == 'User',
+                        onTap: () => _role.value = 'User',
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _RoleOption(
+                        label: 'Admin',
+                        selected: selectedRole == 'Admin',
+                        onTap: () => _role.value = 'Admin',
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          PrimaryButton(label: 'Sign In', onPressed: _signIn),
+          const SizedBox(height: 14),
+          const DividerWithText(text: 'or'),
+          const SizedBox(height: 12),
+          SocialButton(
+            label: 'Continue with Google',
+            iconText: 'G',
+            onPressed: () => showPlaceholderDialog(context, 'Google Sign-In'),
+          ),
+          const SizedBox(height: 8),
+          SocialButton(
+            label: 'Continue with Apple',
+            iconText: '',
+            onPressed: () => showPlaceholderDialog(context, 'Apple Sign-In'),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Text("Don't have an account? ", style: TextStyle(color: EcoScanTheme.slate)),
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, AppRoutes.register),
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    color: EcoScanTheme.charcoal,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RoleOption extends StatelessWidget {
+  const _RoleOption({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 44,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? EcoScanTheme.charcoal : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: selected ? EcoScanTheme.charcoal : EcoScanTheme.border),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : EcoScanTheme.charcoal,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String? _validateEmail(String? value) {
-    final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) {
-      return 'Please enter an email address.';
-    }
-    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(trimmed)) {
+    final email = value?.trim() ?? '';
+    if (email.isEmpty) return 'Please enter an email address.';
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
       return 'Please enter a valid email address.';
     }
     return null;
@@ -172,60 +406,76 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AuthScaffold(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 18),
           const Center(
             child: Text(
               'EcoScan+',
               style: TextStyle(
                 fontSize: 34,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w900,
                 color: EcoScanTheme.charcoal,
-                letterSpacing: -0.6,
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 14),
           const Text(
             'Create an account',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
               color: EcoScanTheme.charcoal,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           const Text(
-            'Enter your email to sign up for this app',
-            style: TextStyle(color: EcoScanTheme.slate, fontSize: 15),
+            'Enter your email to get started.',
+            style: TextStyle(color: EcoScanTheme.slate, fontSize: 14),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.done,
-              autofillHints: const [AutofillHints.email],
-              decoration: const InputDecoration(hintText: 'email@domain.com'),
               validator: _validateEmail,
+              decoration: const InputDecoration(hintText: 'Email address'),
             ),
           ),
-          const SizedBox(height: 20),
-          PrimaryButton(label: 'Continue', onPressed: _continue),
-          const SizedBox(height: 26),
-          const DividerWithText(text: 'or'),
-          const SizedBox(height: 22),
-          const SocialButton(label: 'Continue with Google', iconText: 'G'),
           const SizedBox(height: 12),
-          const SocialButton(label: 'Continue with Apple', iconText: ''),
-          const SizedBox(height: 22),
-          const TermsText(),
+          PrimaryButton(label: 'Continue', onPressed: _continue),
+          const SizedBox(height: 12),
+          const DividerWithText(text: 'or'),
+          const SizedBox(height: 12),
+          SocialButton(
+            label: 'Continue with Google',
+            iconText: 'G',
+            onPressed: () => showPlaceholderDialog(context, 'Google Sign-Up'),
+          ),
+          const SizedBox(height: 8),
+          SocialButton(
+            label: 'Continue with Apple',
+            iconText: '',
+            onPressed: () => showPlaceholderDialog(context, 'Apple Sign-Up'),
+          ),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.all(8),
+            child: Text(
+              'By clicking continue, you agree to our Terms of Service and Privacy Policy',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: EcoScanTheme.slate, height: 1.5),
+            ),
+          ),
         ],
       ),
     );
@@ -240,34 +490,17 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final List<TextEditingController> _controllers = List.generate(
-    6,
-    (_) => TextEditingController(),
-  );
+  final List<TextEditingController> _controllers = List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
-  @override
-  void dispose() {
-    for (final controller in _controllers) {
-      controller.dispose();
-    }
-    for (final focusNode in _focusNodes) {
-      focusNode.dispose();
-    }
-    super.dispose();
-  }
+  String get otpValue => _controllers.map((controller) => controller.text).join();
 
-  String get otpValue =>
-      _controllers.map((controller) => controller.text).join();
-  bool get isOtpValid =>
-      otpValue.length == 6 && RegExp(r'^\d{6}$').hasMatch(otpValue);
+  bool get isOtpValid => RegExp(r'^\d{6}$').hasMatch(otpValue) && otpValue.length == 6;
 
-  void _handleChange(String value, int index) {
+  void _handleDigitChange(String value, int index) {
     if (value.length > 1) {
       final digits = value.replaceAll(RegExp(r'\D'), '');
-      final nextValue = digits.isEmpty
-          ? ''
-          : digits.substring(digits.length - 1);
+      final nextValue = digits.isEmpty ? '' : digits.substring(digits.length - 1);
       _controllers[index].value = TextEditingValue(
         text: nextValue,
         selection: TextSelection.collapsed(offset: nextValue.length),
@@ -282,11 +515,32 @@ class _OtpScreenState extends State<OtpScreen> {
   void _verify() {
     if (!isOtpValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the full 6-digit OTP.')),
+        const SnackBar(content: Text('Please enter the full 6-digit code.')),
       );
       return;
     }
     Navigator.pushReplacementNamed(context, AppRoutes.passwordSetup);
+  }
+
+  void _resend() {
+    for (final controller in _controllers) {
+      controller.clear();
+    }
+    FocusScope.of(context).requestFocus(_focusNodes.first);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('New verification code sent.')),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -295,32 +549,31 @@ class _OtpScreenState extends State<OtpScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 18),
           const Center(
             child: Text(
               'EcoScan+',
               style: TextStyle(
                 fontSize: 34,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w900,
                 color: EcoScanTheme.charcoal,
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
           const Text(
-            'Create an account',
+            'Enter 6-Digit Code',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
               color: EcoScanTheme.charcoal,
             ),
           ),
           const SizedBox(height: 8),
           const Text(
-            'Enter your otp to sign up for this app / check your email app',
+            'We sent a confirmation code to your email.',
             style: TextStyle(color: EcoScanTheme.slate, fontSize: 15),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 28),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(6, (index) {
@@ -329,26 +582,35 @@ class _OtpScreenState extends State<OtpScreen> {
                 child: TextFormField(
                   controller: _controllers[index],
                   focusNode: _focusNodes[index],
-                  textAlign: TextAlign.center,
                   keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
                   maxLength: 1,
+                  textInputAction: index == 5 ? TextInputAction.done : TextInputAction.next,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    counterText: '',
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                  decoration: const InputDecoration(counterText: '', contentPadding: EdgeInsets.zero),
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: EcoScanTheme.charcoal,
                   ),
-                  onChanged: (value) => _handleChange(value, index),
+                  onChanged: (value) => _handleDigitChange(value, index),
                 ),
               );
             }),
           ),
           const SizedBox(height: 24),
           PrimaryButton(label: 'Verify', onPressed: _verify),
+          const SizedBox(height: 18),
+          TextButton(
+            onPressed: _resend,
+            child: const Text(
+              'Resend Code',
+              style: TextStyle(
+                color: EcoScanTheme.charcoal,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -365,10 +627,27 @@ class PasswordSetupScreen extends StatefulWidget {
 class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Please enter a password.';
+    if (value.length < 6) return 'Password must be at least 6 characters.';
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Please confirm your password.';
+    if (value != _passwordController.text) return 'Passwords do not match.';
+    return null;
+  }
+
+  void _continue() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.pushReplacementNamed(context, AppRoutes.userPortal);
+    }
+  }
 
   @override
   void dispose() {
@@ -377,75 +656,46 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
     super.dispose();
   }
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Please enter a password.';
-    }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters.';
-    }
-    return null;
-  }
-
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Please confirm your password.';
-    }
-    if (value != _passwordController.text) {
-      return 'Passwords do not match.';
-    }
-    return null;
-  }
-
-  void _continue() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 18),
           const Center(
             child: Text(
               'EcoScan+',
               style: TextStyle(
                 fontSize: 34,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w900,
                 color: EcoScanTheme.charcoal,
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
           const Text(
-            'Create an account',
+            'Create Password',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
               color: EcoScanTheme.charcoal,
             ),
           ),
           const SizedBox(height: 8),
           const Text(
-            'Setup Password for the account',
+            'Set your account password to continue.',
             style: TextStyle(color: EcoScanTheme.slate, fontSize: 15),
           ),
           const SizedBox(height: 24),
           Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 PasswordField(
                   controller: _passwordController,
                   hintText: 'Password',
                   obscureText: _obscurePassword,
-                  onToggle: () =>
-                      setState(() => _obscurePassword = !_obscurePassword),
+                  onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
                   validator: _validatePassword,
                 ),
                 const SizedBox(height: 16),
@@ -453,9 +703,7 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
                   controller: _confirmPasswordController,
                   hintText: 'Confirm Password',
                   obscureText: _obscureConfirmPassword,
-                  onToggle: () => setState(
-                    () => _obscureConfirmPassword = !_obscureConfirmPassword,
-                  ),
+                  onToggle: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                   validator: _validateConfirmPassword,
                 ),
               ],
@@ -469,450 +717,395 @@ class _PasswordSetupScreenState extends State<PasswordSetupScreen> {
   }
 }
 
-class MainNavigationShell extends StatefulWidget {
-  const MainNavigationShell({super.key});
+class UserPortalScreen extends StatefulWidget {
+  const UserPortalScreen({super.key});
 
   @override
-  State<MainNavigationShell> createState() => _MainNavigationShellState();
+  State<UserPortalScreen> createState() => _UserPortalScreenState();
 }
 
-class _MainNavigationShellState extends State<MainNavigationShell> {
+class _UserPortalScreenState extends State<UserPortalScreen> {
   int _selectedIndex = 0;
 
-  void _handleTap(int index) {
-    if (index == 2) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => const CreateActionSheet(),
-      );
-      return;
-    }
-    setState(() => _selectedIndex = index);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final pages = const [
-      HomeTab(),
-      SearchTab(),
-      SizedBox.shrink(),
-      NotificationsTab(),
-      ProfileTab(),
-    ];
-
-    return Scaffold(
-      body: pages[_selectedIndex == 2 ? 0 : _selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _handleTap,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: EcoScanTheme.forestTeal,
-        unselectedItemColor: Colors.grey.shade700,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.search_rounded),
-            label: 'Search',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_rounded),
-            label: 'Create',
-          ),
-          BottomNavigationBarItem(
-            icon: Badge(
-              label: const Text('5'),
-              child: const Icon(Icons.notifications_rounded),
-            ),
-            label: 'Alerts',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+  final List<Widget> _tabs = const [
+    DashboardTab(),
+    SearchTab(),
+    CreateTab(),
+    ActivityTab(),
+    ProfileTab(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
+      backgroundColor: EcoScanTheme.slateWhite,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu_rounded, size: 28),
             onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: const Icon(Icons.menu_rounded, size: 28),
           ),
         ),
-        title: const Text('EcoScan+'),
+        title: const Text(
+          'EcoScan+',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: EcoScanTheme.charcoal,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
             onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
             icon: const Icon(Icons.chat_bubble_outline_rounded),
           ),
+          IconButton(
+            onPressed: () => showPlaceholderDialog(context, 'Notifications'),
+            icon: const Icon(Icons.notifications_none_rounded),
+          ),
         ],
       ),
       drawer: Drawer(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             children: [
-              const SizedBox(height: 10),
-              const Text(
-                'EcoScan+',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: EcoScanTheme.charcoal,
-                ),
-              ),
-              const SizedBox(height: 24),
-              DrawerItem(
-                label: 'Home',
-                icon: Icons.home_rounded,
-                onTap: () => Navigator.pop(context),
-              ),
-              DrawerItem(
-                label: 'Activity',
-                icon: Icons.bar_chart_rounded,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.activity),
-              ),
-              DrawerItem(
-                label: 'History',
-                icon: Icons.history_rounded,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.history),
-              ),
-              DrawerItem(
-                label: 'Analytics',
-                icon: Icons.insights_rounded,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.analytics),
-              ),
-              DrawerItem(
-                label: 'Settings',
-                icon: Icons.settings_rounded,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
-              ),
-              DrawerItem(
-                label: 'Chat',
-                icon: Icons.chat_bubble_outline_rounded,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.chat),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [EcoScanTheme.peach, EcoScanTheme.tealMist],
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: Colors.black12),
+              Row(
+                children: const [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: EcoScanTheme.peach,
+                    child: Icon(Icons.person_rounded, color: EcoScanTheme.charcoal),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Welcome back, Explorer! 👋',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: EcoScanTheme.charcoal,
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'User Profile',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: EcoScanTheme.charcoal,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'Your overview and metrics will appear here as data becomes available.',
-                        style: TextStyle(
-                          color: EcoScanTheme.slate,
-                          fontSize: 14,
-                          height: 1.5,
+                        SizedBox(height: 4),
+                        Text(
+                          'user@ecoscan.app',
+                          style: TextStyle(color: EcoScanTheme.slate, fontSize: 12),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 26),
-                const Text(
-                  'Quick actions',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: EcoScanTheme.charcoal,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ActionCard(
-                        title: 'Upload',
-                        subtitle: 'Ready for file intake',
-                        icon: Icons.upload_file_rounded,
-                      ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ActionCard(
-                        title: 'Share',
-                        subtitle: 'Send to team',
-                        icon: Icons.share_rounded,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 26),
-                const Text(
-                  'Recent Overview',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: EcoScanTheme.charcoal,
                   ),
-                ),
-                const SizedBox(height: 12),
-                const DashedPlaceholderBox(
-                  height: 180,
-                  label: 'Overview dashboard ready for future data',
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class SearchTab extends StatefulWidget {
-  const SearchTab({super.key});
-
-  @override
-  State<SearchTab> createState() => _SearchTabState();
-}
-
-class _SearchTabState extends State<SearchTab> {
-  final TextEditingController _searchController = TextEditingController();
-  final List<String> _categories = [
-    'All',
-    'Category 1',
-    'Category 2',
-    'Category 3',
-    'Category 4',
-  ];
-  int _selectedIndex = 0;
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
-      appBar: AppBar(title: const Text('Search'), centerTitle: true),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  suffixIcon: IconButton(
-                    onPressed: () => _searchController.clear(),
-                    icon: const Icon(Icons.clear_rounded),
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(height: 14),
-              SizedBox(
-                height: 46,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final active = index == _selectedIndex;
-                    return ChoiceChip(
-                      label: Text(_categories[index]),
-                      selected: active,
-                      onSelected: (_) => setState(() => _selectedIndex = index),
-                      selectedColor: EcoScanTheme.charcoal,
-                      backgroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.black12),
-                      labelStyle: TextStyle(
-                        color: active ? Colors.white : EcoScanTheme.charcoal,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    );
+              const SizedBox(height: 16),
+              ...[
+                'Dashboard',
+                'Chat Support',
+                'Activity',
+                'History',
+                'Analytics',
+                'Settings',
+                'Log Out',
+              ].map(
+                (item) => ListTile(
+                  title: Text(item),
+                  onTap: () {
+                    Navigator.pop(context);
+                    switch (item) {
+                      case 'Dashboard':
+                        setState(() => _selectedIndex = 0);
+                        break;
+                      case 'Chat Support':
+                        Navigator.pushNamed(context, AppRoutes.chat);
+                        break;
+                      case 'Activity':
+                        setState(() => _selectedIndex = 3);
+                        break;
+                      case 'History':
+                        Navigator.pushNamed(context, AppRoutes.history);
+                        break;
+                      case 'Analytics':
+                        Navigator.pushNamed(context, AppRoutes.analytics);
+                        break;
+                      case 'Settings':
+                        Navigator.pushNamed(context, AppRoutes.settings);
+                        break;
+                      case 'Log Out':
+                        logoutAndReturnToLogin(context);
+                        break;
+                    }
                   },
                 ),
               ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: GridView.builder(
-                  itemCount: 6,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.05,
-                  ),
-                  itemBuilder: (context, index) => const DashedPlaceholderBox(
-                    height: 120,
-                    label: 'Result placeholder',
-                  ),
-                ),
-              ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class CreateActionSheet extends StatelessWidget {
-  const CreateActionSheet({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 42,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-            const Text(
-              'Quick create',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: EcoScanTheme.charcoal,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: const [
-                Expanded(
-                  child: QuickActionTile(
-                    label: 'Document',
-                    icon: Icons.description_rounded,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: QuickActionTile(
-                    label: 'Task',
-                    icon: Icons.task_alt_rounded,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: const [
-                Expanded(
-                  child: QuickActionTile(
-                    label: 'Message',
-                    icon: Icons.message_rounded,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: QuickActionTile(
-                    label: 'Upload',
-                    icon: Icons.upload_file_rounded,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            PrimaryButton(
-              label: 'Create new',
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
+      body: IndexedStack(index: _selectedIndex, children: _tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (value) => setState(() => _selectedIndex = value),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_rounded), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.search_rounded), label: 'Search'),
+          NavigationDestination(icon: Icon(Icons.add_circle_outline_rounded), label: 'Create'),
+          NavigationDestination(icon: Icon(Icons.notifications_none_rounded), label: 'Activity'),
+          NavigationDestination(icon: Icon(Icons.person_outline_rounded), label: 'Profile'),
+        ],
       ),
     );
   }
 }
 
-class NotificationsTab extends StatelessWidget {
-  const NotificationsTab({super.key});
+class DashboardTab extends StatelessWidget {
+  const DashboardTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
-      appBar: AppBar(title: const Text('Notifications'), centerTitle: true),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-          children: const [
-            NotificationCard(
-              title: 'New workflow update',
-              subtitle:
-                  'The dashboard is ready for future live data integration.',
-              time: '2m ago',
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Dashboard',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
             ),
-            NotificationCard(
-              title: 'Action required',
-              subtitle: 'Review and complete the pending setup.',
-              time: '15m ago',
-              unread: true,
+          ),
+          const SizedBox(height: 14),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [EcoScanTheme.peach, EcoScanTheme.mistTeal],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(18),
             ),
-            NotificationCard(
-              title: 'Shared with team',
-              subtitle: 'A new update is ready for review.',
-              time: '1h ago',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Welcome back, user@example.com',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: EcoScanTheme.charcoal,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Your next eco opportunity is ready to be organized and explored.',
+                  style: TextStyle(color: EcoScanTheme.slate, fontSize: 14, height: 1.6),
+                ),
+                const SizedBox(height: 18),
+                PrimaryButton(
+                  label: 'Scan Now',
+                  onPressed: () => showPlaceholderDialog(context, 'Quick Scan Flow'),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Quick Actions',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 12),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.5,
+            children: [
+              QuickActionCard(title: 'Entry', icon: Icons.add_rounded, onTap: () => showPlaceholderDialog(context, 'New Entry')),
+              QuickActionCard(title: 'Insights', icon: Icons.insights_rounded, onTap: () => Navigator.pushNamed(context, AppRoutes.analytics)),
+              QuickActionCard(title: 'History', icon: Icons.history_rounded, onTap: () => Navigator.pushNamed(context, AppRoutes.history)),
+              QuickActionCard(title: 'Support', icon: Icons.support_agent_rounded, onTap: () => Navigator.pushNamed(context, AppRoutes.chat)),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Recent Overview',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 10),
+          const EmptyStatePanel(label: 'Overview panel ready for future integration'),
+        ],
+      ),
+    );
+  }
+}
+
+class SearchTab extends StatelessWidget {
+  const SearchTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              hintText: 'Search items, records or actions',
+              prefixIcon: const Icon(Icons.search_rounded, color: EcoScanTheme.slate),
+              suffixIcon: IconButton(
+                onPressed: () => showPlaceholderDialog(context, 'Search Reset'),
+                icon: const Icon(Icons.close_rounded, color: EcoScanTheme.slate),
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Search results',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const EmptyStatePanel(label: 'Search result placeholder waiting for live index data'),
+        ],
+      ),
+    );
+  }
+}
+
+class CreateTab extends StatelessWidget {
+  const CreateTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Create / Add Entry',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: EcoScanTheme.border),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'New Record',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: EcoScanTheme.charcoal,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Use this workflow to create a structured item when your data model is connected.',
+                  style: TextStyle(color: EcoScanTheme.slate, fontSize: 14),
+                ),
+                const SizedBox(height: 18),
+                PrimaryButton(
+                  label: 'Add New Record',
+                  onPressed: () => showPlaceholderDialog(context, 'Create Entry Modal'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ActivityTab extends StatelessWidget {
+  const ActivityTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Activity & Notifications',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            height: 42,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: const [
+                FilterChipOption(label: 'All', selected: true),
+                FilterChipOption(label: 'Category 1'),
+                FilterChipOption(label: 'Category 2'),
+                FilterChipOption(label: 'Category 3'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          ActivityListItem(
+            username: 'Alicia Chen',
+            time: '2 min ago',
+            message: 'Shared a new review on the latest update.',
+            unread: true,
+            onPressed: () => showPlaceholderDialog(context, 'Activity Detail'),
+          ),
+          ActivityListItem(
+            username: 'Mark Lopez',
+            time: '1 hour ago',
+            message: 'Uploaded a new project snapshot for review.',
+            unread: false,
+            onPressed: () => showPlaceholderDialog(context, 'Activity Detail'),
+          ),
+          ActivityListItem(
+            username: 'Nia Patel',
+            time: 'Today',
+            message: 'Commented on a new entry from the team queue.',
+            unread: true,
+            onPressed: () => showPlaceholderDialog(context, 'Activity Detail'),
+          ),
+        ],
       ),
     );
   }
@@ -923,340 +1116,395 @@ class ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
-      appBar: AppBar(title: const Text('Profile'), centerTitle: true),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 26),
-          child: Column(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Stack(
             children: [
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.black12),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: const Icon(
-                      Icons.person_rounded,
-                      size: 46,
-                      color: EcoScanTheme.charcoal,
-                    ),
-                  ),
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: const BoxDecoration(
-                      color: EcoScanTheme.forestTeal,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.edit_rounded,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              const CircleAvatar(
+                radius: 46,
+                backgroundColor: EcoScanTheme.mistTeal,
+                child: Icon(Icons.person_rounded, size: 42, color: EcoScanTheme.charcoal),
               ),
-              const SizedBox(height: 18),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: const BoxDecoration(
+                    color: EcoScanTheme.charcoal,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.edit_rounded, size: 16, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'user@ecoscan.app',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: EcoScanTheme.charcoal,
+            ),
+          ),
+          const SizedBox(height: 18),
+          const EmptyStatePanel(label: 'Profile summary placeholder ready for connected metrics'),
+          const SizedBox(height: 18),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: EcoScanTheme.border),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                ProfileQuickLink(title: 'Account', icon: Icons.person_outline_rounded, onTap: () => showPlaceholderDialog(context, 'Account Settings')),
+                ProfileQuickLink(title: 'Privacy & Security', icon: Icons.lock_outline_rounded, onTap: () => showPlaceholderDialog(context, 'Privacy & Security')),
+                ProfileQuickLink(title: 'Notifications', icon: Icons.notifications_none_rounded, onTap: () => showPlaceholderDialog(context, 'Notifications')),
+                ProfileQuickLink(title: 'Theme', icon: Icons.dark_mode_outlined, onTap: () => showPlaceholderDialog(context, 'Theme Settings')),
+                ProfileQuickLink(title: 'About', icon: Icons.info_outline_rounded, onTap: () => showPlaceholderDialog(context, 'About')),
+                ProfileQuickLink(title: 'Log Out', icon: Icons.logout_rounded, onTap: () => logoutAndReturnToLogin(context)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminPortalScreen extends StatefulWidget {
+  const AdminPortalScreen({super.key});
+
+  @override
+  State<AdminPortalScreen> createState() => _AdminPortalScreenState();
+}
+
+class _AdminPortalScreenState extends State<AdminPortalScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _tabs = const [
+    AdminOverviewTab(),
+    AdminUsersTab(),
+    AdminModerationTab(),
+    AdminLogsTab(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: EcoScanTheme.slateWhite,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (context) => IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: const Icon(Icons.menu_rounded, size: 28),
+          ),
+        ),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'EcoScan+',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: EcoScanTheme.charcoal,
+              ),
+            ),
+            SizedBox(width: 8),
+            Chip(
+              label: Text('Admin Mode'),
+              side: BorderSide(color: EcoScanTheme.border),
+              backgroundColor: EcoScanTheme.cream,
+            ),
+          ],
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () => showPlaceholderDialog(context, 'Admin Notifications'),
+            icon: const Icon(Icons.notifications_none_rounded),
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            children: [
               const Text(
-                'Explorer',
+                'Admin Portal',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: EcoScanTheme.charcoal,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Project workspace',
-                style: TextStyle(color: EcoScanTheme.slate, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: const [
-                  Expanded(
-                    child: ProfileStatCard(label: 'Status', value: 'Ready'),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: ProfileStatCard(label: 'Role', value: 'Admin'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black12),
-                  borderRadius: BorderRadius.circular(18),
+              const SizedBox(height: 20),
+              ...[
+                'Admin Dashboard',
+                'User Management',
+                'Content Moderation',
+                'System Logs',
+                'Settings',
+                'Log Out',
+              ].map(
+                (item) => ListTile(
+                  title: Text(item),
+                  onTap: () {
+                    Navigator.pop(context);
+                    switch (item) {
+                      case 'Admin Dashboard':
+                        setState(() => _selectedIndex = 0);
+                        break;
+                      case 'User Management':
+                        setState(() => _selectedIndex = 1);
+                        break;
+                      case 'Content Moderation':
+                        setState(() => _selectedIndex = 2);
+                        break;
+                      case 'System Logs':
+                        setState(() => _selectedIndex = 3);
+                        break;
+                      case 'Settings':
+                        Navigator.pushNamed(context, AppRoutes.settings);
+                        break;
+                      case 'Log Out':
+                        logoutAndReturnToLogin(context);
+                        break;
+                    }
+                  },
                 ),
-                child: Column(
-                  children: const [
-                    ProfileInfoRow(label: 'Email', value: 'user@ecoscan.app'),
-                    Divider(height: 24),
-                    ProfileInfoRow(label: 'Workspace', value: 'EcoScan+ Core'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              const SettingsListTile(
-                label: 'Account',
-                trailing: Icon(Icons.chevron_right_rounded),
-              ),
-              const SettingsListTile(
-                label: 'Privacy & Security',
-                trailing: Icon(Icons.chevron_right_rounded),
-              ),
-              const SettingsListTile(
-                label: 'Appearance',
-                trailing: Icon(Icons.chevron_right_rounded),
-              ),
-              const SettingsListTile(
-                label: 'Log Out',
-                trailing: Icon(Icons.logout_rounded),
               ),
             ],
           ),
         ),
       ),
+      body: IndexedStack(index: _selectedIndex, children: _tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (value) => setState(() => _selectedIndex = value),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.dashboard_rounded), label: 'Overview'),
+          NavigationDestination(icon: Icon(Icons.groups_rounded), label: 'Users'),
+          NavigationDestination(icon: Icon(Icons.shield_rounded), label: 'Moderation'),
+          NavigationDestination(icon: Icon(Icons.list_alt_rounded), label: 'Logs'),
+        ],
+      ),
     );
   }
 }
 
-class ActivityPage extends StatelessWidget {
-  const ActivityPage({super.key});
+class AdminOverviewTab extends StatelessWidget {
+  const AdminOverviewTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
-      appBar: AppBar(title: const Text('Activity')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 40,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    CategoryChip(label: 'Category 1'),
-                    CategoryChip(label: 'Category 2'),
-                    CategoryChip(label: 'Category 3'),
-                    CategoryChip(label: 'Category 4'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: ListView(
-                  children: const [
-                    ActivityItem(
-                      title: 'Workflow review',
-                      action: 'Submitted',
-                      time: '2m ago',
-                    ),
-                    ActivityItem(
-                      title: 'New assignment',
-                      action: 'Queued',
-                      time: '18m ago',
-                      unread: true,
-                    ),
-                    ActivityItem(
-                      title: 'File processed',
-                      action: 'Completed',
-                      time: '1h ago',
-                    ),
-                  ],
-                ),
-              ),
-            ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            'System overview',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: EcoScanTheme.charcoal),
           ),
-        ),
+          SizedBox(height: 16),
+          EmptyStatePanel(label: 'Total Users placeholder'),
+          SizedBox(height: 12),
+          EmptyStatePanel(label: 'Pending Actions placeholder'),
+          SizedBox(height: 12),
+          EmptyStatePanel(label: 'Server Status placeholder'),
+        ],
       ),
     );
   }
 }
 
-class ChatScreen extends StatefulWidget {
+class AdminUsersTab extends StatelessWidget {
+  const AdminUsersTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'User management',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: EcoScanTheme.charcoal),
+          ),
+          const SizedBox(height: 16),
+          UserManagementRow(
+            name: 'Aida Moore',
+            email: 'aida@ecoscan.app',
+            role: 'Admin',
+            onToggle: () => showPlaceholderDialog(context, 'User status toggle'),
+            onEdit: () => showPlaceholderDialog(context, 'Edit user'),
+          ),
+          UserManagementRow(
+            name: 'Ethan Hill',
+            email: 'ethan@ecoscan.app',
+            role: 'User',
+            onToggle: () => showPlaceholderDialog(context, 'User status toggle'),
+            onEdit: () => showPlaceholderDialog(context, 'Edit user'),
+          ),
+          UserManagementRow(
+            name: 'Sofia Reed',
+            email: 'sofia@ecoscan.app',
+            role: 'Moderator',
+            onToggle: () => showPlaceholderDialog(context, 'User status toggle'),
+            onEdit: () => showPlaceholderDialog(context, 'Edit user'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminModerationTab extends StatelessWidget {
+  const AdminModerationTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Moderation queue',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: EcoScanTheme.charcoal),
+          ),
+          const SizedBox(height: 16),
+          ModerationItemCard(
+            title: 'Pending content review',
+            description: 'New update requires a final moderation decision before release.',
+            onApprove: () => showPlaceholderDialog(context, 'Approve item'),
+            onReject: () => showPlaceholderDialog(context, 'Reject item'),
+          ),
+          ModerationItemCard(
+            title: 'Review flagged activity',
+            description: 'A user-submitted record was flagged for manual compliance review.',
+            onApprove: () => showPlaceholderDialog(context, 'Approve item'),
+            onReject: () => showPlaceholderDialog(context, 'Reject item'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminLogsTab extends StatelessWidget {
+  const AdminLogsTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            'System logs',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: EcoScanTheme.charcoal),
+          ),
+          SizedBox(height: 16),
+          EmptyStatePanel(label: 'System log stream placeholder for audit and debugging data'),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _controller = TextEditingController();
-  final List<_ChatBubble> _messages = [
-    const _ChatBubble(
-      isOutgoing: false,
-      text: 'Hello! How can we help you today?',
-    ),
-    const _ChatBubble(
-      isOutgoing: true,
-      text: 'I am setting up the workspace template.',
-    ),
-  ];
-
-  void _sendMessage() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) {
-      return;
-    }
-    setState(() {
-      _messages.add(_ChatBubble(isOutgoing: true, text: text));
-      _controller.clear();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        title: Row(
+        title: const Row(
           children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.black12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(
-                Icons.person_rounded,
-                color: EcoScanTheme.charcoal,
-              ),
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: EcoScanTheme.mistTeal,
+              child: Icon(Icons.support_agent_rounded, size: 18, color: EcoScanTheme.charcoal),
             ),
-            const SizedBox(width: 10),
-            const Column(
+            SizedBox(width: 10),
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Customer Service',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  'Chatted 11m ago',
-                  style: TextStyle(fontSize: 12, color: EcoScanTheme.slate),
-                ),
+                Text('Customer Service', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                Text('Online', style: TextStyle(fontSize: 11, color: EcoScanTheme.slate)),
               ],
             ),
           ],
         ),
-        actions: const [
-          Icon(Icons.call_rounded),
-          SizedBox(width: 8),
-          Icon(Icons.videocam_rounded),
-          SizedBox(width: 8),
+        actions: [
+          IconButton(onPressed: () => showPlaceholderDialog(context, 'Voice call'), icon: const Icon(Icons.call_outlined)),
+          IconButton(onPressed: () => showPlaceholderDialog(context, 'Video call'), icon: const Icon(Icons.videocam_outlined)),
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _ChatBubble(text: 'Hi there! How can I help you today?', isIncoming: true),
+                    const SizedBox(height: 12),
+                    const _ChatBubble(text: 'I need help with my account setup.', isIncoming: false),
+                    const SizedBox(height: 12),
+                    const _ChatBubble(text: 'Absolutely. We can review your onboarding status and guide the next step.', isIncoming: true),
+                  ],
                 ),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  return Align(
-                    alignment: message.isOutgoing
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.72,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: message.isOutgoing
-                            ? EcoScanTheme.charcoal
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: message.isOutgoing
-                            ? null
-                            : Border.all(color: Colors.black12),
-                      ),
-                      child: Text(
-                        message.text,
-                        style: TextStyle(
-                          color: message.isOutgoing
-                              ? Colors.white
-                              : EcoScanTheme.charcoal,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  );
-                },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: EcoScanTheme.border)),
+              ),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.mic_rounded),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.emoji_emotions_rounded),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.attach_file_rounded),
-                  ),
+                  IconButton(onPressed: () => showPlaceholderDialog(context, 'Voice note'), icon: const Icon(Icons.mic_none_rounded)),
+                  IconButton(onPressed: () => showPlaceholderDialog(context, 'Emoji picker'), icon: const Icon(Icons.emoji_emotions_outlined)),
+                  IconButton(onPressed: () => showPlaceholderDialog(context, 'Attachment upload'), icon: const Icon(Icons.attach_file_rounded)),
+                  const SizedBox(width: 8),
                   Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Message...',
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
+                    child: Container(
+                      height: 46,
+                      decoration: BoxDecoration(
+                        color: EcoScanTheme.slateWhite,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: EcoScanTheme.border),
                       ),
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Text('Type a message', style: TextStyle(color: EcoScanTheme.slate)),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: const BoxDecoration(
-                      color: EcoScanTheme.charcoal,
-                      shape: BoxShape.circle,
-                    ),
+                  CircleAvatar(
+                    backgroundColor: EcoScanTheme.charcoal,
                     child: IconButton(
-                      onPressed: _sendMessage,
+                      onPressed: () => showPlaceholderDialog(context, 'Send message'),
                       icon: const Icon(Icons.send_rounded, color: Colors.white),
                     ),
                   ),
@@ -1270,103 +1518,96 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+class _ChatBubble extends StatelessWidget {
+  const _ChatBubble({required this.text, required this.isIncoming});
+
+  final String text;
+  final bool isIncoming;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isIncoming ? Alignment.centerLeft : Alignment.centerRight,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 280),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isIncoming ? const Color(0xFFE5E7EB) : EcoScanTheme.charcoal,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isIncoming ? EcoScanTheme.charcoal : Colors.white,
+            fontSize: 14,
+            height: 1.4,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
       appBar: AppBar(title: const Text('History')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: const DashedPlaceholderBox(
-            height: 260,
-            label: 'History timeline ready for future records',
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AnalyticsPage extends StatelessWidget {
-  const AnalyticsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
-      appBar: AppBar(title: const Text('Analytics')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const DashedPlaceholderBox(
-                height: 180,
-                label: 'No analytics data yet',
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: const [
-                  Expanded(
-                    child: DashedPlaceholderBox(
-                      height: 120,
-                      label: 'Trend placeholder',
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: DashedPlaceholderBox(
-                      height: 120,
-                      label: 'Chart placeholder',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: EcoScanTheme.appBg,
-      appBar: AppBar(title: const Text('Settings')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
           children: const [
-            SettingsListTile(
-              label: 'Account',
-              trailing: Icon(Icons.chevron_right_rounded),
-            ),
-            SettingsListTile(
-              label: 'Privacy & Security',
-              trailing: Icon(Icons.chevron_right_rounded),
-            ),
-            SettingsListTile(
-              label: 'Notifications',
-              trailing: Icon(Icons.chevron_right_rounded),
-            ),
-            SettingsListTile(
-              label: 'Appearance',
-              trailing: Icon(Icons.chevron_right_rounded),
-            ),
-            SettingsListTile(
-              label: 'Log Out',
-              trailing: Icon(Icons.logout_rounded),
-            ),
+            EmptyStatePanel(label: 'Chronological history placeholder ready for connected records'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AnalyticsScreen extends StatelessWidget {
+  const AnalyticsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Analytics')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            EmptyStatePanel(label: 'Main graph placeholder'),
+            SizedBox(height: 12),
+            EmptyStatePanel(label: 'Performance summary placeholder'),
+            SizedBox(height: 12),
+            EmptyStatePanel(label: 'Insights panel placeholder'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
+          children: [
+            SettingsSectionTile(title: 'Account', icon: Icons.person_outline_rounded, onTap: () => showPlaceholderDialog(context, 'Account Settings')),
+            SettingsSectionTile(title: 'Privacy & Security', icon: Icons.lock_outline_rounded, onTap: () => showPlaceholderDialog(context, 'Privacy & Security')),
+            SettingsSectionTile(title: 'Notifications', icon: Icons.notifications_none_rounded, onTap: () => showPlaceholderDialog(context, 'Notifications')),
+            SettingsSectionTile(title: 'Theme', icon: Icons.dark_mode_outlined, onTap: () => showPlaceholderDialog(context, 'Theme Settings')),
+            SettingsSectionTile(title: 'About', icon: Icons.info_outline_rounded, onTap: () => showPlaceholderDialog(context, 'About')),
+            SettingsSectionTile(title: 'Log Out', icon: Icons.logout_rounded, onTap: () => logoutAndReturnToLogin(context)),
           ],
         ),
       ),
@@ -1375,11 +1616,7 @@ class SettingsPage extends StatelessWidget {
 }
 
 class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
+  const PrimaryButton({super.key, required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
@@ -1387,16 +1624,13 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52,
+      height: 44,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
+          backgroundColor: EcoScanTheme.charcoal,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         child: Text(label),
@@ -1406,25 +1640,29 @@ class PrimaryButton extends StatelessWidget {
 }
 
 class SocialButton extends StatelessWidget {
-  const SocialButton({super.key, required this.label, required this.iconText});
+  const SocialButton({
+    super.key,
+    required this.label,
+    required this.iconText,
+    required this.onPressed,
+  });
 
   final String label;
   final String iconText;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52,
+      height: 42,
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: EcoScanTheme.charcoal,
-          side: const BorderSide(color: Color(0xFFDBDBDB)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+          side: const BorderSide(color: EcoScanTheme.border),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1433,7 +1671,7 @@ class SocialButton extends StatelessWidget {
               width: 26,
               height: 26,
               decoration: BoxDecoration(
-                color: EcoScanTheme.creamMist,
+                color: EcoScanTheme.cream,
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
@@ -1476,27 +1714,11 @@ class DividerWithText extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             text,
-            style: const TextStyle(
-              color: EcoScanTheme.slate,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(color: EcoScanTheme.slate, fontWeight: FontWeight.w600),
           ),
         ),
         const Expanded(child: Divider(color: Color(0xFFCBD3D7), thickness: 1)),
       ],
-    );
-  }
-}
-
-class TermsText extends StatelessWidget {
-  const TermsText({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text(
-      'By clicking continue, you agree to our Terms of Service and Privacy Policy',
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 12, color: EcoScanTheme.slate, height: 1.5),
     );
   }
 }
@@ -1528,9 +1750,7 @@ class PasswordField extends StatelessWidget {
         suffixIcon: IconButton(
           onPressed: onToggle,
           icon: Icon(
-            obscureText
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
+            obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
             color: EcoScanTheme.slate,
           ),
         ),
@@ -1539,229 +1759,221 @@ class PasswordField extends StatelessWidget {
   }
 }
 
-class DrawerItem extends StatelessWidget {
-  const DrawerItem({
+class QuickActionCard extends StatelessWidget {
+  const QuickActionCard({
     super.key,
-    required this.label,
+    required this.title,
     required this.icon,
     required this.onTap,
   });
 
-  final String label;
+  final String title;
   final IconData icon;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      onTap: () {
-        Navigator.pop(context);
-        onTap();
-      },
-    );
-  }
-}
-
-class ActionCard extends StatelessWidget {
-  const ActionCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: EcoScanTheme.creamMist,
-              borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: EcoScanTheme.border),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: EcoScanTheme.peach,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: EcoScanTheme.charcoal),
             ),
-            child: Icon(icon, color: EcoScanTheme.charcoal),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: EcoScanTheme.charcoal,
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: EcoScanTheme.charcoal,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: const TextStyle(color: EcoScanTheme.slate, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CategoryChip extends StatelessWidget {
-  const CategoryChip({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: EcoScanTheme.charcoal,
-          fontWeight: FontWeight.w700,
+          ],
         ),
       ),
     );
   }
 }
 
-class ActivityItem extends StatelessWidget {
-  const ActivityItem({
+class ActivityListItem extends StatelessWidget {
+  const ActivityListItem({
     super.key,
-    required this.title,
-    required this.action,
+    required this.username,
     required this.time,
-    this.unread = false,
+    required this.message,
+    required this.unread,
+    required this.onPressed,
   });
 
-  final String title;
-  final String action;
+  final String username;
   final String time;
+  final String message;
   final bool unread;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: EcoScanTheme.border)),
+        ),
+        child: Row(
+          children: [
+            if (unread)
               Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: EcoScanTheme.creamMist,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.person_rounded,
-                  color: EcoScanTheme.charcoal,
-                ),
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.only(right: 10),
+                decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
               ),
-              if (unread)
-                Positioned(
-                  right: 0,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: EcoScanTheme.charcoal,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  action,
-                  style: const TextStyle(
-                    color: EcoScanTheme.slate,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+            const CircleAvatar(
+              radius: 20,
+              backgroundColor: EcoScanTheme.mistTeal,
+              child: Icon(Icons.person_rounded, size: 18, color: EcoScanTheme.charcoal),
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                time,
-                style: const TextStyle(color: EcoScanTheme.slate, fontSize: 12),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        username,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: EcoScanTheme.charcoal,
+                        ),
+                      ),
+                      Text(time, style: const TextStyle(fontSize: 11, color: EcoScanTheme.slate)),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(message, style: const TextStyle(fontSize: 13, color: EcoScanTheme.slate)),
+                ],
               ),
-              const SizedBox(height: 8),
-              Container(
-                width: 56,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: EcoScanTheme.creamMist,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.chevron_right_rounded,
-                  color: EcoScanTheme.charcoal,
-                ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: EcoScanTheme.slateWhite,
+                border: Border.all(color: EcoScanTheme.border),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
-          ),
-        ],
+              child: const Icon(Icons.chevron_right_rounded, color: EcoScanTheme.slate),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class NotificationCard extends StatelessWidget {
-  const NotificationCard({
+class FilterChipOption extends StatelessWidget {
+  const FilterChipOption({super.key, required this.label, this.selected = false});
+
+  final String label;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 10),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => showPlaceholderDialog(context, '$label filter'),
+        backgroundColor: Colors.white,
+        selectedColor: EcoScanTheme.charcoal,
+        labelStyle: TextStyle(
+          color: selected ? Colors.white : EcoScanTheme.charcoal,
+          fontWeight: FontWeight.w600,
+        ),
+        side: const BorderSide(color: EcoScanTheme.border),
+      ),
+    );
+  }
+}
+
+class ProfileQuickLink extends StatelessWidget {
+  const ProfileQuickLink({
     super.key,
     required this.title,
-    required this.subtitle,
-    required this.time,
-    this.unread = false,
+    required this.icon,
+    required this.onTap,
   });
 
   final String title;
-  final String subtitle;
-  final String time;
-  final bool unread;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Icon(icon, color: EcoScanTheme.charcoal),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: EcoScanTheme.charcoal,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: EcoScanTheme.slate),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UserManagementRow extends StatelessWidget {
+  const UserManagementRow({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.role,
+    required this.onToggle,
+    required this.onEdit,
+  });
+
+  final String name;
+  final String email;
+  final String role;
+  final VoidCallback onToggle;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -1770,23 +1982,15 @@ class NotificationCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: EcoScanTheme.border),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: EcoScanTheme.creamMist,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.notifications_rounded,
-              color: EcoScanTheme.charcoal,
-            ),
+          const CircleAvatar(
+            radius: 22,
+            backgroundColor: EcoScanTheme.mistTeal,
+            child: Icon(Icons.person_rounded, color: EcoScanTheme.charcoal),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1797,241 +2001,172 @@ class NotificationCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        title,
+                        name,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           color: EcoScanTheme.charcoal,
                         ),
                       ),
                     ),
-                    if (unread)
-                      Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: EcoScanTheme.cream,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        role,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: EcoScanTheme.charcoal,
                         ),
                       ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: EcoScanTheme.slate,
-                    fontSize: 12,
-                    height: 1.5,
-                  ),
-                ),
+                const SizedBox(height: 4),
+                Text(email, style: const TextStyle(fontSize: 12, color: EcoScanTheme.slate)),
               ],
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            time,
-            style: const TextStyle(color: EcoScanTheme.slate, fontSize: 11),
-          ),
+          Switch.adaptive(value: true, onChanged: (_) => onToggle()),
+          IconButton(onPressed: onEdit, icon: const Icon(Icons.edit_rounded)),
         ],
       ),
     );
   }
 }
 
-class SettingsListTile extends StatelessWidget {
-  const SettingsListTile({
+class ModerationItemCard extends StatelessWidget {
+  const ModerationItemCard({
     super.key,
-    required this.label,
-    required this.trailing,
+    required this.title,
+    required this.description,
+    required this.onApprove,
+    required this.onReject,
   });
 
-  final String label;
-  final Widget trailing;
+  final String title;
+  final String description;
+  final VoidCallback onApprove;
+  final VoidCallback onReject;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: ListTile(title: Text(label), trailing: trailing, onTap: () {}),
-    );
-  }
-}
-
-class ProfileStatCard extends StatelessWidget {
-  const ProfileStatCard({super.key, required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: EcoScanTheme.border),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
-            style: const TextStyle(color: EcoScanTheme.slate, fontSize: 12),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
+            title,
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 17,
               fontWeight: FontWeight.w800,
               color: EcoScanTheme.charcoal,
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(color: EcoScanTheme.slate, fontSize: 13),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: onApprove,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: EcoScanTheme.charcoal,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Approve'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onReject,
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Reject'),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-class ProfileInfoRow extends StatelessWidget {
-  const ProfileInfoRow({super.key, required this.label, required this.value});
+class EmptyStatePanel extends StatelessWidget {
+  const EmptyStatePanel({super.key, required this.label});
 
   final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(color: EcoScanTheme.slate, fontSize: 13),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            color: EcoScanTheme.charcoal,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class QuickActionTile extends StatelessWidget {
-  const QuickActionTile({super.key, required this.label, required this.icon});
-
-  final String label;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: EcoScanTheme.creamMist,
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        border: Border.all(color: EcoScanTheme.border),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        children: [
-          Icon(icon, size: 28, color: EcoScanTheme.charcoal),
-          const SizedBox(height: 10),
-          Text(
-            label,
-            style: const TextStyle(
-              color: EcoScanTheme.charcoal,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: EcoScanTheme.slate,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 }
 
-class DashedPlaceholderBox extends StatelessWidget {
-  const DashedPlaceholderBox({
+class SettingsSectionTile extends StatelessWidget {
+  const SettingsSectionTile({
     super.key,
-    required this.height,
-    required this.label,
+    required this.title,
+    required this.icon,
+    required this.onTap,
   });
 
-  final double height;
-  final String label;
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: EcoScanTheme.border),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: CustomPaint(
-        painter: DashedBorderPainter(),
-        child: Center(
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: EcoScanTheme.slate,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+      child: ListTile(
+        leading: Icon(icon, color: EcoScanTheme.charcoal),
+        title: Text(title),
+        trailing: const Icon(Icons.chevron_right_rounded, color: EcoScanTheme.slate),
+        onTap: onTap,
       ),
     );
   }
-}
-
-class DashedBorderPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black12
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-
-    final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, size.height),
-          const Radius.circular(18),
-        ),
-      );
-
-    final metrics = path.computeMetrics();
-    const dashWidth = 6.0;
-    const dashSpace = 4.0;
-
-    for (final metric in metrics) {
-      var start = 0.0;
-      while (start < metric.length) {
-        final end = start + dashWidth;
-        canvas.drawPath(metric.extractPath(start, end), paint);
-        start += dashWidth + dashSpace;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _ChatBubble {
-  const _ChatBubble({required this.isOutgoing, required this.text});
-
-  final bool isOutgoing;
-  final String text;
 }
